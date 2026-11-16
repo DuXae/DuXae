@@ -1,0 +1,329 @@
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --ink: #16202a;
+  --muted: #62707d;
+  --line: #e2e8ee;
+  --accent: #0f766e;
+  --accent-soft: #e6f4f1;
+  --danger: #b42318;
+  --danger-soft: #fdeceb;
+  --warn: #a15c07;
+  --warn-soft: #fdf3e2;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(22, 32, 42, .07);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  width: min(1180px, 100% - 32px);
+  margin: 0 auto;
+}
+
+/* ---------- Шапка ---------- */
+
+.topbar {
+  background: #0e1a22;
+  color: #eef4f7;
+}
+
+.topbar .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.brand span {
+  color: #4fd1c5;
+  margin: 0 2px;
+}
+
+.topbar-link {
+  color: inherit;
+  text-decoration: none;
+  font-size: 14px;
+  opacity: .8;
+}
+
+.topbar-link:hover { opacity: 1; }
+
+/* ---------- Вступление ---------- */
+
+.intro {
+  padding: 36px 0 22px;
+}
+
+.intro h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 3.4vw, 34px);
+  line-height: 1.15;
+}
+
+.intro p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--muted);
+}
+
+/* ---------- Раскладка ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding-bottom: 28px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.form h2:not(:first-child) {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Поля ---------- */
+
+.field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+.btn:hover { background: #f7f9fb; }
+
+.btn-primary {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-primary:hover { background: #0c625b; }
+
+/* ---------- Результаты ---------- */
+
+.verdict {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.verdict.bad {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+
+.grid div {
+  padding: 12px 14px;
+  background: #f8fafb;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.grid dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.grid dd {
+  margin: 4px 0 0;
+  font-size: 19px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Замечания ---------- */
+
+.warnings {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.warnings:empty { display: none; }
+
+.warnings p {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 10px;
+  border-left: 4px solid var(--muted);
+  background: #f8fafb;
+}
+
+.warnings .error {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.warnings .warn {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+/* ---------- Цена ---------- */
+
+.price {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.price th,
+.price td {
+  padding: 9px 0;
+  text-align: left;
+  font-weight: 400;
+  border-bottom: 1px solid var(--line);
+}
+
+.price td { text-align: right; white-space: nowrap; }
+
+.price .total th,
+.price .total td {
+  padding-top: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: none;
+}
+
+.fineprint {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- Формулы ---------- */
+
+.formulas { margin-bottom: 28px; }
+
+.formulas summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.formulas ul {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+
+.formulas li { margin-bottom: 6px; }
+
+.footer {
+  padding: 0 0 40px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+code {
+  padding: 1px 5px;
+  background: #eef2f5;
+  border-radius: 5px;
+  font-size: .92em;
+}
+
+/* ---------- Адаптив ---------- */
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ---------- Печать ---------- */
+
+@media print {
+  body { background: #fff; }
+  .topbar, .form-actions, .formulas, .footer, .intro p { display: none; }
+  .card { box-shadow: none; border-color: #ccc; }
+  .layout { grid-template-columns: 1fr; }
+  .grid dd { font-size: 16px; }
+}
