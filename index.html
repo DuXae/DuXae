@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Лесенка: программа</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+<header>
+  <div class="container">
+    <table class="brand-table">
+      <tr>
+        <td class="brand-cell">
+          <a href="#/" class="brand">
+            <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+              <rect x="6" y="44" width="12" height="14" fill="#c8322b"/>
+              <rect x="18" y="34" width="12" height="24" fill="#c8322b"/>
+              <rect x="30" y="24" width="12" height="34" fill="#c8322b"/>
+              <rect x="42" y="14" width="12" height="44" fill="#c8322b"/>
+              <path d="M8 46 L56 12" stroke="#0f4c81" stroke-width="4" fill="none"/>
+            </svg>
+            <span class="brand-name">Лесенка</span>
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-danger btn-in" href="#/" title="Вход в личный кабинет">Вход</a>
+        </td>
+      </tr>
+    </table>
+    <hr>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Меню">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="collapse navbar-collapse" id="navbarNav">
+          <div class="dropdown col-2">
+            <a class="btn btn-a dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Файл &nbsp<div class="down-arrow"></div>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#/">Загрузить</a></li>
+              <li><a class="dropdown-item" href="#/">Сохранить</a></li>
+            </ul>
+          </div>
+          <div class="dropdown col-2">
+            <a class="btn btn-a dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Настройка &nbsp<div class="down-arrow"></div>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#/">Параметры</a></li>
+              <li><a class="dropdown-item" href="#/">Мой аккаунт</a></li>
+            </ul>
+          </div>
+          <div class="dropdown col-2">
+            <a class="btn btn-a dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Справка &nbsp<div class="down-arrow"></div>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#/">Инструкция</a></li>
+              <li><a class="dropdown-item" href="#/">Поддержать</a></li>
+              <li><a class="dropdown-item" href="#/">О программе</a></li>
+            </ul>
+          </div>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container fw-bolder">
+
+    <!-- Форма ввода -->
+    <section id="view-form" class="view">
+      <div class="row">
+        <div class="align-items-start col">
+          <h5 class="display-6">Лестница</h5>
+          <form id="stair-form" action="#/result" method="get">
+            <hr>
+            <div class="prokrutka">
+              <table class="steps-table">
+                <thead>
+                <tr>
+                  <th>№</th>
+                  <td align="center">Высота ступени, мм</td>
+                  <td align="center">Длина проступи, мм</td>
+                </tr>
+                </thead>
+                <tbody id="steps-body"></tbody>
+              </table>
+            </div>
+            <hr>
+            <div class="container-fluid">
+              <br>
+              <table class="platform-table">
+                <tr>
+                  <td>Длина нижней площадки, мм</td>
+                  <td><input class="form-control" type="number" step="1" min="1" max="99999" id="down-floor" value=""></td>
+                </tr>
+                <tr>
+                  <td>Ширина марша, мм</td>
+                  <td><input class="form-control" type="number" step="1" min="1" max="99999" id="width-stair" value=""></td>
+                </tr>
+                <tr>
+                  <td>Длина верхней площадки, мм</td>
+                  <td><input class="form-control" type="number" step="1" min="1" max="99999" id="upper-floor" value=""></td>
+                </tr>
+              </table>
+              <br>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="ramp" id="ramp0" value="0" checked>
+                <label class="form-check-label" for="ramp0">Обычный пандус</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="ramp" id="ramp50" value="50">
+                <label class="form-check-label" for="ramp50">Удлиненный пандус на 50мм</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="ramp" id="ramp100" value="100">
+                <label class="form-check-label" for="ramp100">Удлиненный пандус на 100мм</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="ramp" id="ramp150" value="150">
+                <label class="form-check-label" for="ramp150">Удлиненный пандус на 150мм</label>
+              </div>
+              <br>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="short-npu" checked>
+                <label class="form-check-label" for="short-npu">Укороченная площадка НПУ</label>
+              </div>
+              <br>
+              <span class="actions">
+                <input class="btn btn-danger" type="submit" value="Расчитать">
+                <button class="btn btn-danger reset" type="button" id="reset-button">Сброс</button>
+              </span>
+            </div>
+          </form>
+        </div>
+
+        <div class="col my-nav">
+          <div class="container text-info-my">
+            <p class="text-p">Вводить целые числа в мм!<br>
+              Ступеньки не пропускать!<br>
+              Последняя ступенька без длины проступи!<br>
+              (т.к. длина проступи - это длина верхней площадки)
+            </p>
+          </div>
+          <svg class="stair-hint" viewBox="0 0 600 420" role="img" aria-label="Обозначения размеров лестницы">
+            <path d="M60 360 H120 V320 H180 V280 H240 V240 H300 V200 H360 V160 H420 V120 H480 V80 H540"
+                  fill="none" stroke="#0f4c81" stroke-width="4"/>
+            <line x1="120" y1="320" x2="120" y2="360" stroke="#c8322b" stroke-width="3"/>
+            <text x="128" y="348" font-size="18" fill="#c8322b">h</text>
+            <line x1="120" y1="378" x2="180" y2="378" stroke="#c8322b" stroke-width="3"/>
+            <text x="140" y="400" font-size="18" fill="#c8322b">l</text>
+            <text x="400" y="330" font-size="17" fill="#0f4c81">высота ступени</text>
+            <text x="400" y="356" font-size="17" fill="#0f4c81">длина проступи</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Результат -->
+    <section id="view-result" class="view is-hidden">
+      <div id="result-content"></div>
+      <p class="back-link"><a href="#/">← Вернуться к форме</a></p>
+    </section>
+
+    <!-- Карточка модели -->
+    <section id="view-detail" class="view is-hidden">
+      <div id="detail-content"></div>
+      <p class="back-link"><a href="#/result">← К общему результату</a></p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <hr>
+    <table>
+      <tr>
+        <td class="my-td" align="left"><h4>Расчёт наклонного подъёмника</h4></td>
+      </tr>
+      <tr>
+        <td class="my-td" align="top">
+          Рабочая копия калькулятора: форма ввода лестницы, параметры платформ EasyTrap и НПУ,
+          проверка проходимости по 12 вариантам исполнения.
+        </td>
+      </tr>
+    </table>
+  </div>
+</footer>
+
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
