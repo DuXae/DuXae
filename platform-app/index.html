@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Расчёт наклонной подъёмной платформы</title>
+<meta name="description" content="Программа для определения параметров наклонной подъёмной платформы по размерам ступеней лестницы.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="vendor/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="header-row">
+      <a class="brand" href="#" aria-label="На главную">
+        <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+          <rect width="34" height="34" rx="9" fill="#0f4c81"/>
+          <path d="M8 25h5v-5h5v-5h5v-5h3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">Платформа</span>
+        <span class="brand-sub">расчёт подъёмника</span>
+      </a>
+      <button class="btn btn-danger btn-login" type="button" data-bs-toggle="modal" data-bs-target="#accountModal">Вход</button>
+    </div>
+  </div>
+</header>
+
+<nav class="site-nav">
+  <div class="container">
+    <ul class="nav-links">
+      <li class="dropdown">
+        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Файл</button>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item" type="button" id="menu-load">Загрузить</button></li>
+          <li><button class="dropdown-item" type="button" id="menu-save">Сохранить</button></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item" type="button" id="menu-reset">Сброс</button></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Настройка</button>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#settingsModal">Параметры</button></li>
+          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#accountModal">Мой аккаунт</button></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Справка</button>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#helpModal">Инструкция</button></li>
+          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#aboutModal">О программе</button></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<main class="container page">
+  <h1 class="page-title">Расчёт наклонной подъёмной платформы</h1>
+
+  <div class="row g-4 align-items-start">
+    <div class="col-lg-7">
+      <form id="form" novalidate>
+        <div class="steps-scroll">
+          <table class="steps-table">
+            <thead>
+              <tr>
+                <th scope="col">Лестница №</th>
+                <th scope="col">Высота ступени, мм</th>
+                <th scope="col">Длина проступи, мм</th>
+              </tr>
+            </thead>
+            <tbody id="steps-body"></tbody>
+          </table>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-sm-4">
+            <label class="form-label" for="lower">Длина нижней площадки, мм</label>
+            <input class="form-control" id="lower" type="number" inputmode="numeric" min="0" step="1" value="1000">
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label" for="width">Ширина марша, мм</label>
+            <input class="form-control" id="width" type="number" inputmode="numeric" min="0" step="1" value="1100">
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label" for="upper">Длина верхней площадки, мм</label>
+            <input class="form-control" id="upper" type="number" inputmode="numeric" min="0" step="1" value="1000">
+          </div>
+        </div>
+
+        <fieldset class="ramps mt-3">
+          <legend>Въездной пандус</legend>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="ramp" id="ramp-0" value="0" checked>
+            <label class="form-check-label" for="ramp-0">Обычный пандус</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="ramp" id="ramp-50" value="50">
+            <label class="form-check-label" for="ramp-50">Удлинённый пандус на 50 мм</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="ramp" id="ramp-100" value="100">
+            <label class="form-check-label" for="ramp-100">Удлинённый пандус на 100 мм</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="ramp" id="ramp-150" value="150">
+            <label class="form-check-label" for="ramp-150">Удлинённый пандус на 150 мм</label>
+          </div>
+          <div class="form-check form-switch mt-2">
+            <input class="form-check-input" type="checkbox" role="switch" id="npu">
+            <label class="form-check-label" for="npu">Укороченная площадка НПУ</label>
+          </div>
+        </fieldset>
+
+        <div class="actions mt-3">
+          <button class="btn btn-danger btn-lg" type="submit">Рассчитать</button>
+          <button class="btn btn-outline-secondary btn-lg" type="button" id="reset">Сброс</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="notice">
+        <p>Вводить целые числа в мм!</p>
+        <p>Ступеньки не пропускать!</p>
+        <p>Последняя ступенька без длины проступи:<br>длина проступи — это длина верхней площадки.</p>
+      </div>
+
+      <figure class="scheme-figure">
+        <svg id="scheme" viewBox="0 0 420 240" role="img" aria-label="Схема подъёма по лестнице"></svg>
+        <figcaption>Высота ступени и длина проступи</figcaption>
+      </figure>
+
+      <div class="result" id="result" aria-live="polite">
+        <div class="result-head" id="result-head">Результат</div>
+        <ul class="param-list" id="result-list"></ul>
+        <div class="alerts" id="alerts"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Программа для определения параметров наклонной подъёмной платформы.
+       Ограничения платформ: длина подъёма до 10 м, угол подъёма до 30°.</p>
+  </div>
+</footer>
+
+<input type="file" id="file-input" accept="application/json,.json" hidden>
+
+<!-- Модальные окна -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="settingsTitle">Параметры</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small">Значения применяются сразу и сохраняются в браузере.</p>
+        <div class="row g-3" id="settings-fields"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" id="settings-reset">Вернуть заводские</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Готово</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="helpTitle">Инструкция</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <ol>
+          <li>Введите высоту ступени и длину проступи для каждой ступени — сверху вниз, без пропусков.</li>
+          <li>У последней ступени длина проступи не нужна: её роль играет верхняя площадка.</li>
+          <li>Укажите длину нижней площадки, ширину марша и длину верхней площадки.</li>
+          <li>Выберите въездной пандус; при необходимости включите укороченную площадку НПУ.</li>
+          <li>Нажмите «Рассчитать». Результат обновляется и при вводе.</li>
+        </ol>
+        <p>Файл → «Сохранить» выгружает расчёт в JSON, «Загрузить» возвращает его обратно.</p>
+        <p>Ограничения: длина подъёма до 10 м, угол подъёма до 30°. Если расчёт выходит за них,
+           программа показывает ошибку.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="aboutTitle">О программе</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <p>Программа определяет параметры наклонной подъёмной платформы по геометрии лестницы:
+           длину и угол подъёма, длину направляющей, габарит платформы, нагрузки и время перемещения.</p>
+        <p class="mb-0">Расчёт ориентировочный и не заменяет выезд на объект и проверку несущей
+           способности ступеней.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="accountTitle">Мой аккаунт</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">Программа работает локально, без сервера: вход не нужен, расчёты никуда
+           не отправляются. Сохранение проекта — через меню «Файл».</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/bootstrap.bundle.min.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
