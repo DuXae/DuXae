@@ -31,10 +31,7 @@ body {
 
 /* ---------- Шапка ---------- */
 
-.topbar {
-  background: #0e1a22;
-  color: #eef4f7;
-}
+.topbar { background: #0e1a22; color: #eef4f7; }
 
 .topbar .wrap {
   display: flex;
@@ -43,15 +40,8 @@ body {
   height: 60px;
 }
 
-.brand {
-  font-weight: 600;
-  letter-spacing: .02em;
-}
-
-.brand span {
-  color: #4fd1c5;
-  margin: 0 2px;
-}
+.brand { font-weight: 600; letter-spacing: .02em; }
+.brand span { color: #4fd1c5; margin: 0 2px; }
 
 .topbar-link {
   color: inherit;
@@ -64,19 +54,17 @@ body {
 
 /* ---------- Вступление ---------- */
 
-.intro {
-  padding: 36px 0 22px;
-}
+.intro { padding: 34px 0 22px; }
 
 .intro h1 {
   margin: 0 0 8px;
-  font-size: clamp(24px, 3.4vw, 34px);
-  line-height: 1.15;
+  font-size: clamp(23px, 3.2vw, 32px);
+  line-height: 1.18;
 }
 
 .intro p {
   margin: 0;
-  max-width: 62ch;
+  max-width: 66ch;
   color: var(--muted);
 }
 
@@ -84,7 +72,7 @@ body {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(320px, 460px) minmax(0, 1fr);
   gap: 20px;
   align-items: start;
   padding-bottom: 28px;
@@ -107,17 +95,98 @@ body {
 }
 
 .form h2:not(:first-child) {
-  margin-top: 26px;
+  margin-top: 24px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-head h2 { margin-bottom: 10px; }
+
+.stepper { display: flex; gap: 6px; }
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ---------- Таблица ступеней ---------- */
+
+.step-table {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.step-head,
+.step-row {
+  display: grid;
+  grid-template-columns: 38px 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+}
+
+.step-head {
+  background: #f8fafb;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.step-body { max-height: 340px; overflow-y: auto; }
+
+.step-row { border-bottom: 1px solid #f1f5f8; }
+.step-row:last-child { border-bottom: none; }
+
+.step-row .num {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.step-row input {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.step-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.step-row input:disabled {
+  background: #f4f6f8;
+  color: var(--muted);
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* ---------- Поля ---------- */
 
-.field {
-  display: block;
-  margin-bottom: 14px;
-}
+.field { display: block; margin-bottom: 14px; }
 
 .field span {
   display: block;
@@ -146,11 +215,7 @@ body {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-.form-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
+.form-actions { display: flex; gap: 10px; margin-top: 20px; }
 
 .btn {
   flex: 1;
@@ -179,7 +244,7 @@ body {
 
 .verdict {
   display: inline-block;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   padding: 7px 14px;
   font-size: 14px;
   font-weight: 600;
@@ -188,16 +253,23 @@ body {
   color: var(--accent);
 }
 
-.verdict.bad {
-  background: var(--danger-soft);
-  color: var(--danger);
+.verdict.bad { background: var(--danger-soft); color: var(--danger); }
+
+.scheme {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+  background: #f8fafb;
+  border: 1px solid var(--line);
+  border-radius: 12px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
-  margin: 0 0 24px;
+  margin: 0 0 22px;
 }
 
 .grid div {
@@ -207,10 +279,7 @@ body {
   border-radius: 10px;
 }
 
-.grid dt {
-  font-size: 13px;
-  color: var(--muted);
-}
+.grid dt { font-size: 13px; color: var(--muted); }
 
 .grid dd {
   margin: 4px 0 0;
@@ -221,12 +290,7 @@ body {
 
 /* ---------- Замечания ---------- */
 
-.warnings {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
+.warnings { display: grid; gap: 8px; margin-bottom: 16px; }
 .warnings:empty { display: none; }
 
 .warnings p {
@@ -250,46 +314,12 @@ body {
   color: var(--warn);
 }
 
-/* ---------- Цена ---------- */
-
-.price {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-}
-
-.price th,
-.price td {
-  padding: 9px 0;
-  text-align: left;
-  font-weight: 400;
-  border-bottom: 1px solid var(--line);
-}
-
-.price td { text-align: right; white-space: nowrap; }
-
-.price .total th,
-.price .total td {
-  padding-top: 14px;
-  font-size: 18px;
-  font-weight: 700;
-  border-bottom: none;
-}
-
-.fineprint {
-  margin: 14px 0 0;
-  font-size: 13px;
-  color: var(--muted);
-}
+.fineprint { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
 
 /* ---------- Формулы ---------- */
 
 .formulas { margin-bottom: 28px; }
-
-.formulas summary {
-  cursor: pointer;
-  font-weight: 600;
-}
+.formulas summary { cursor: pointer; font-weight: 600; }
 
 .formulas ul {
   margin: 14px 0 0;
@@ -299,11 +329,7 @@ body {
 
 .formulas li { margin-bottom: 6px; }
 
-.footer {
-  padding: 0 0 40px;
-  font-size: 13px;
-  color: var(--muted);
-}
+.footer { padding: 0 0 40px; font-size: 13px; color: var(--muted); }
 
 code {
   padding: 1px 5px;
@@ -314,7 +340,7 @@ code {
 
 /* ---------- Адаптив ---------- */
 
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
 }
 
@@ -322,8 +348,9 @@ code {
 
 @media print {
   body { background: #fff; }
-  .topbar, .form-actions, .formulas, .footer, .intro p { display: none; }
+  .topbar, .form-actions, .formulas, .footer, .intro p, .hint { display: none; }
   .card { box-shadow: none; border-color: #ccc; }
   .layout { grid-template-columns: 1fr; }
+  .step-body { max-height: none; overflow: visible; }
   .grid dd { font-size: 16px; }
 }

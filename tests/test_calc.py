@@ -2,141 +2,183 @@
 
 from __future__ import annotations
 
+import json
+import math
 import unittest
 
-from liftcalc.calc import (
-    LiftInput,
+from platformcalc.calc import (
+    StairInput,
+    Step,
     compute,
+    uniform_stair,
 )
 
 
-def sample(**overrides) -> LiftInput:
-    base = dict(height_m=2.8, run_m=3.4, width_m=1.10, steps=15)
-    base.update(overrides)
-    return LiftInput(**base)
+def base_input(**overrides) -> StairInput:
+    """12 ступеней 160×320, площадки по метру, марш 1100 мм."""
+    params = dict(
+        steps=uniform_stair(12, 160, 320),
+        lower_platform_mm=1000.0,
+        upper_platform_mm=1000.0,
+        width_mm=1100.0,
+        ramp="normal",
+    )
+    params.update(overrides)
+    return StairInput(**params)
 
 
 class GeometryTests(unittest.TestCase):
-    def test_angle_matches_pythagoras(self) -> None:
-        result = compute(sample())
-        # atan2(2.8, 3.4) = 39.47°
-        self.assertAlmostEqual(result.angle_deg, 39.47, places=2)
-        self.assertAlmostEqual(result.slope_length_m, 4.405, places=3)
+    def test_rise_is_sum_of_risers(self) -> None:
+        result = compute(base_input())
+        self.assertEqual(result.rise_mm, 12 * 160)
 
-    def test_rail_has_two_end_reserves(self) -> None:
-        result = compute(sample())
-        self.assertAlmostEqual(result.rail_length_m, result.slope_length_m + 0.70, places=6)
+    def test_steps_run_ignores_last_tread(self) -> None:
+        result = compute(base_input())
+        self.assertEqual(result.steps_run_mm, 11 * 320)
 
-    def test_turn_adds_extra_rail(self) -> None:
-        straight = compute(sample(track="straight"))
-        turn = compute(sample(track="turn"))
-        self.assertAlmostEqual(turn.rail_length_m - straight.rail_length_m, 1.60, places=6)
+    def test_total_run_includes_landings(self) -> None:
+        result = compute(base_input(lower_platform_mm=1200, upper_platform_mm=800))
+        self.assertEqual(result.total_run_mm, 1200 + 11 * 320 + 800)
 
-    def test_supports_are_at_least_two(self) -> None:
-        short = compute(sample(height_m=0.6, run_m=1.2, steps=4))
-        self.assertGreaterEqual(short.supports, 2)
+    def test_angle_follows_arc_tangent(self) -> None:
+        result = compute(base_input())
+        expected = math.degrees(math.atan2(1920, 3520))
+        self.assertAlmostEqual(result.angle_deg, expected, places=6)
+        self.assertAlmostEqual(result.angle_deg, 28.61, places=2)
 
-    def test_step_height(self) -> None:
-        result = compute(sample(steps=14))
-        self.assertAlmostEqual(result.step_height_mm, 200.0, places=3)
+    def test_slope_is_hypotenuse(self) -> None:
+        result = compute(base_input())
+        self.assertAlmostEqual(result.slope_length_mm, math.hypot(1920, 3520), places=6)
 
+    def test_rail_has_two_tails(self) -> None:
+        result = compute(base_input())
+        self.assertAlmostEqual(result.rail_length_mm, result.slope_length_mm + 500, places=6)
 
-class PhysicsTests(unittest.TestCase):
-    def test_heavier_load_needs_more_force(self) -> None:
-        light = compute(sample(payload_kg=120))
-        heavy = compute(sample(payload_kg=350))
-        self.assertGreater(heavy.traction_force_n, light.traction_force_n)
-        self.assertGreater(heavy.motor_power_kw, light.motor_power_kw)
+    def test_supports_cover_rail(self) -> None:
+        result = compute(base_input())
+        self.assertEqual(result.supports, math.ceil(result.rail_length_mm / 1500))
+        self.assertGreaterEqual(result.supports, 2)
 
-    def test_moving_mass_includes_platform(self) -> None:
-        result = compute(sample(payload_kg=200, kind="platform"))
-        self.assertAlmostEqual(result.moving_mass_kg, 320.0)
-
-    def test_seat_is_lighter(self) -> None:
-        platform = compute(sample(kind="platform"))
-        seat = compute(sample(kind="seat"))
-        self.assertLess(seat.moving_mass_kg, platform.moving_mass_kg)
-
-    def test_travel_time(self) -> None:
-        result = compute(sample())
-        self.assertAlmostEqual(result.travel_time_s, result.slope_length_m / 0.10, places=6)
-
-    def test_load_per_support_lower_for_more_supports(self) -> None:
-        result = compute(sample())
-        self.assertAlmostEqual(
-            result.load_per_support_n * result.supports,
-            result.moving_mass_kg * 9.81 * __import__("math").cos(__import__("math").radians(result.angle_deg)),
-            places=3,
-        )
-
-
-class PriceTests(unittest.TestCase):
-    def test_base_price_includes_three_metres(self) -> None:
-        result = compute(sample(height_m=1.0, run_m=1.6, steps=6))
-        self.assertLess(result.rail_length_m, 3.0)
-        self.assertEqual(result.price.extra_rail, 0.0)
-
-    def test_extra_rail_charged_above_three_metres(self) -> None:
-        result = compute(sample())
-        expected = (result.rail_length_m - 3.0) * 42_000
-        self.assertAlmostEqual(result.price.extra_rail, expected, places=2)
-
-    def test_turn_and_wheelchair_are_paid_options(self) -> None:
-        base = compute(sample(track="straight", kind="seat"))
-        full = compute(sample(track="turn", kind="platform"))
-        self.assertEqual(base.price.turn, 0.0)
-        self.assertEqual(base.price.wheelchair, 0.0)
-        self.assertGreater(full.price.turn, 0.0)
-        self.assertGreater(full.price.wheelchair, 0.0)
-
-    def test_total_is_sum_of_parts(self) -> None:
-        p = compute(sample()).price
-        self.assertAlmostEqual(p.total, p.base + p.extra_rail + p.turn + p.wheelchair + p.installation, places=6)
-
-
-class WarningTests(unittest.TestCase):
-    def test_steep_stair_is_infeasible(self) -> None:
-        result = compute(sample(height_m=4.0, run_m=1.5, steps=20))
+    def test_zero_treads_make_vertical_climb(self) -> None:
+        steps = tuple(Step(rise_mm=150, tread_mm=0) for _ in range(5))
+        result = compute(base_input(steps=steps))
+        self.assertAlmostEqual(result.angle_deg, 90.0)
         self.assertFalse(result.is_feasible)
 
-    def test_flat_stair_is_infeasible(self) -> None:
-        result = compute(sample(height_m=0.7, run_m=6.0, steps=4))
-        self.assertFalse(result.is_feasible)
 
-    def test_narrow_stair_is_infeasible(self) -> None:
-        result = compute(sample(width_m=0.8))
+class PlatformTests(unittest.TestCase):
+    def test_normal_ramp_keeps_base_length(self) -> None:
+        result = compute(base_input(ramp="normal"))
+        self.assertEqual(result.platform.length_mm, 1100)
+
+    def test_extended_ramps_add_length(self) -> None:
+        for ramp, delta in (("ext50", 50), ("ext100", 100), ("ext150", 150)):
+            result = compute(base_input(ramp=ramp))
+            self.assertEqual(result.platform.length_mm, 1100 + delta)
+
+    def test_short_npu_reduces_length(self) -> None:
+        result = compute(base_input(ramp="short_npu"))
+        self.assertEqual(result.platform.length_mm, 950)
+
+    def test_platform_width_keeps_margins(self) -> None:
+        result = compute(base_input(width_mm=1300))
+        self.assertEqual(result.platform.width_mm, 1200)
+
+    def test_platform_width_has_floor(self) -> None:
+        result = compute(base_input(width_mm=850))
+        self.assertEqual(result.platform.width_mm, 800)
+
+    def test_ramp_title_is_human_readable(self) -> None:
+        result = compute(base_input(ramp="ext100"))
+        self.assertEqual(result.platform.ramp_title, "Удлинённый пандус на 100 мм")
+
+
+class LimitTests(unittest.TestCase):
+    def test_angle_above_thirty_is_infeasible(self) -> None:
+        steps = uniform_stair(12, 200, 250)  # atan(2400/2750) ≈ 41°
+        result = compute(base_input(steps=steps))
+        self.assertGreater(result.angle_deg, 30)
+        self.assertFalse(result.is_feasible)
+        self.assertTrue(any("30" in w.text for w in result.warnings))
+
+    def test_rise_above_ten_metres_is_infeasible(self) -> None:
+        steps = uniform_stair(60, 200, 300)
+        result = compute(base_input(steps=steps))
+        self.assertGreater(result.rise_mm, 10_000)
         self.assertFalse(result.is_feasible)
 
     def test_typical_stair_is_feasible(self) -> None:
-        result = compute(sample())
-        self.assertTrue(result.is_feasible)
+        self.assertTrue(compute(base_input()).is_feasible)
 
-    def test_payload_above_400_warns(self) -> None:
-        result = compute(sample(payload_kg=450))
+
+class WarningTests(unittest.TestCase):
+    def test_narrow_march_warns(self) -> None:
+        result = compute(base_input(width_mm=850))
         self.assertTrue(any(w.level == "warn" for w in result.warnings))
+
+    def test_uneven_risers_warn(self) -> None:
+        steps = [Step(160, 320) for _ in range(11)] + [Step(200, 0)]
+        result = compute(base_input(steps=tuple(steps)))
+        self.assertGreater(result.riser_spread_mm, 5)
+        self.assertTrue(any("различаются" in w.text for w in result.warnings))
+
+    def test_short_treads_warn(self) -> None:
+        steps = uniform_stair(12, 160, 200)
+        result = compute(base_input(steps=steps))
+        self.assertTrue(any("Проступь меньше 250" in w.text for w in result.warnings))
+
+    def test_last_tread_notice(self) -> None:
+        steps = uniform_stair(12, 160, 320)
+        result = compute(base_input(steps=steps))
+        self.assertTrue(any(w.level == "info" and "последней" in w.text for w in result.warnings))
+
+    def test_high_risers_warn(self) -> None:
+        steps = uniform_stair(10, 230, 320)
+        result = compute(base_input(steps=steps))
+        self.assertTrue(any("выше 200" in w.text for w in result.warnings))
+
+
+class MotionTests(unittest.TestCase):
+    def test_travel_time_from_slope(self) -> None:
+        result = compute(base_input())
+        self.assertAlmostEqual(result.travel_time_s, result.slope_length_mm / 1000 / 0.10, places=6)
+
+    def test_total_time_includes_boarding(self) -> None:
+        result = compute(base_input())
+        self.assertAlmostEqual(result.total_time_s, result.travel_time_s + 6.0, places=6)
+
+    def test_load_shared_between_supports(self) -> None:
+        result = compute(base_input())
+        normal = result.moving_mass_kg * 9.81 * math.cos(math.radians(result.angle_deg))
+        self.assertAlmostEqual(result.load_per_support_n * result.supports, normal, places=3)
 
 
 class ValidationTests(unittest.TestCase):
-    def test_negative_height_rejected(self) -> None:
-        with self.assertRaises(ValueError):
-            compute(sample(height_m=-1))
-
     def test_single_step_rejected(self) -> None:
         with self.assertRaises(ValueError):
-            compute(sample(steps=1))
+            compute(base_input(steps=(Step(160, 320),)))
 
-    def test_unknown_track_rejected(self) -> None:
+    def test_negative_rise_rejected(self) -> None:
+        steps = uniform_stair(5, 160, 320)
+        bad = steps[:4] + (Step(-10, 0),)
         with self.assertRaises(ValueError):
-            compute(sample(track="spiral"))
+            compute(base_input(steps=bad))
+
+    def test_unknown_ramp_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            compute(base_input(ramp="spiral"))
+
+    def test_zero_payload_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            compute(base_input(payload_kg=0))
 
 
 class SerializationTests(unittest.TestCase):
     def test_to_dict_is_json_ready(self) -> None:
-        import json
-
-        payload = compute(sample()).to_dict()
+        payload = compute(base_input()).to_dict()
         encoded = json.dumps(payload, ensure_ascii=False)
         self.assertIn("angle_deg", encoded)
+        self.assertIn("platform", payload)
         self.assertTrue(payload["feasible"])
 
 

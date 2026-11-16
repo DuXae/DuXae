@@ -3,70 +3,75 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Калькулятор наклонного подъёмника для лестницы</title>
-<meta name="description" content="Расчёт наклонного подъёмника: угол, длина направляющей, нагрузки, мощность привода и ориентировочная цена.">
+<title>Расчёт наклонной подъёмной платформы</title>
+<meta name="description" content="Расчёт наклонной подъёмной платформы по размерам ступеней: высота и угол подъёма, длина направляющей, габарит платформы, нагрузки.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="topbar">
   <div class="wrap">
-    <div class="brand">Подъёмник<span>·</span>расчёт</div>
+    <div class="brand">Платформа<span>·</span>расчёт</div>
     <a class="topbar-link" href="https://github.com/DuXae/DuXae" target="_blank" rel="noopener">Исходники</a>
   </div>
 </header>
 
 <main class="wrap">
   <section class="intro">
-    <h1>Калькулятор наклонного подъёмника</h1>
-    <p>Введите размеры лестницы — программа посчитает геометрию, нагрузки на крепления,
-       мощность привода и ориентировочную стоимость.</p>
+    <h1>Расчёт наклонной подъёмной платформы</h1>
+    <p>Введите высоту и длину проступи каждой ступени, длины площадок и ширину марша.
+       Программа посчитает угол подъёма, длину направляющей, габарит платформы и нагрузки —
+       и проверит, проходит ли лестница по ограничениям.</p>
   </section>
 
   <div class="layout">
     <form class="card form" id="form" autocomplete="off">
-      <h2>Лестница</h2>
+      <div class="section-head">
+        <h2>Ступени</h2>
+        <div class="stepper">
+          <button type="button" class="btn btn-icon" id="remove-step" title="Убрать ступень">−</button>
+          <button type="button" class="btn btn-icon" id="add-step" title="Добавить ступень">+</button>
+        </div>
+      </div>
+
+      <div class="step-table">
+        <div class="step-head">
+          <span>№</span><span>Высота, мм</span><span>Проступь, мм</span>
+        </div>
+        <div id="rows" class="step-body"></div>
+      </div>
+      <p class="hint">У последней ступени проступь не нужна: её роль играет верхняя площадка.</p>
+
+      <h2>Площадки и марш</h2>
 
       <label class="field">
-        <span>Высота подъёма, м</span>
-        <input id="height" type="number" min="0.2" max="12" step="0.01" value="2.80">
+        <span>Длина нижней площадки, мм</span>
+        <input id="lower" type="number" min="0" max="10000" step="10" value="1000">
       </label>
 
       <label class="field">
-        <span>Горизонтальная проекция марша, м</span>
-        <input id="run" type="number" min="0.2" max="20" step="0.01" value="3.40">
+        <span>Длина верхней площадки, мм</span>
+        <input id="upper" type="number" min="0" max="10000" step="10" value="1000">
       </label>
 
       <label class="field">
-        <span>Ширина марша в свету, м</span>
-        <input id="width" type="number" min="0.5" max="3" step="0.01" value="1.10">
+        <span>Ширина марша, мм</span>
+        <input id="width" type="number" min="600" max="3000" step="10" value="1100">
       </label>
 
       <label class="field">
-        <span>Число ступеней</span>
-        <input id="steps" type="number" min="2" max="60" step="1" value="15">
-      </label>
-
-      <h2>Подъёмник</h2>
-
-      <label class="field">
-        <span>Трасса</span>
-        <select id="track">
-          <option value="straight">Прямая</option>
-          <option value="turn">С поворотом</option>
-        </select>
-      </label>
-
-      <label class="field">
-        <span>Тип</span>
-        <select id="kind">
-          <option value="platform">Платформа для коляски</option>
-          <option value="seat">Кресло</option>
+        <span>Въездной пандус</span>
+        <select id="ramp">
+          <option value="normal">Обычный пандус</option>
+          <option value="ext50">Удлинённый на 50 мм</option>
+          <option value="ext100">Удлинённый на 100 мм</option>
+          <option value="ext150">Удлинённый на 150 мм</option>
+          <option value="short_npu">Укороченная площадка НПУ</option>
         </select>
       </label>
 
       <label class="field">
         <span>Грузоподъёмность, кг</span>
-        <input id="payload" type="number" min="60" max="600" step="10" value="250">
+        <input id="payload" type="number" min="60" max="500" step="10" value="250">
       </label>
 
       <div class="form-actions">
@@ -78,61 +83,61 @@
     <section class="card results" aria-live="polite">
       <div class="verdict" id="verdict">—</div>
 
+      <svg id="scheme" class="scheme" viewBox="0 0 480 260" role="img" aria-label="Схема подъёма"></svg>
+
       <h2>Геометрия</h2>
       <dl class="grid">
-        <div><dt>Угол наклона</dt><dd id="out-angle">—</dd></div>
+        <div><dt>Высота подъёма</dt><dd id="out-rise">—</dd></div>
+        <div><dt>Длина по ступеням</dt><dd id="out-run">—</dd></div>
+        <div><dt>Угол подъёма</dt><dd id="out-angle">—</dd></div>
         <div><dt>Длина по наклону</dt><dd id="out-slope">—</dd></div>
         <div><dt>Направляющая</dt><dd id="out-rail">—</dd></div>
         <div><dt>Точек крепления</dt><dd id="out-supports">—</dd></div>
-        <div><dt>Шаг ступени</dt><dd id="out-step">—</dd></div>
-        <div><dt>Свободная ширина</dt><dd id="out-clear">—</dd></div>
-        <div><dt>Платформа</dt><dd id="out-platform">—</dd></div>
-        <div><dt>Скорость</dt><dd id="out-speed">—</dd></div>
       </dl>
 
-      <h2>Нагрузки и привод</h2>
+      <h2>Платформа</h2>
+      <dl class="grid">
+        <div><dt>Длина</dt><dd id="out-plat-len">—</dd></div>
+        <div><dt>Ширина</dt><dd id="out-plat-width">—</dd></div>
+        <div><dt>Пандус</dt><dd id="out-ramp">—</dd></div>
+        <div><dt>Средняя ступень</dt><dd id="out-avg-rise">—</dd></div>
+      </dl>
+
+      <h2>Движение и нагрузки</h2>
       <dl class="grid">
         <div><dt>Время в пути</dt><dd id="out-time">—</dd></div>
         <div><dt>Полный цикл</dt><dd id="out-cycle">—</dd></div>
-        <div><dt>Движущаяся масса</dt><dd id="out-mass">—</dd></div>
         <div><dt>Тяговое усилие</dt><dd id="out-force">—</dd></div>
         <div><dt>Мощность привода</dt><dd id="out-power">—</dd></div>
         <div><dt>Нагрузка на крепление</dt><dd id="out-load">—</dd></div>
+        <div><dt>Движущаяся масса</dt><dd id="out-mass">—</dd></div>
       </dl>
 
       <div class="warnings" id="warnings"></div>
-
-      <h2>Стоимость, ориентировочно</h2>
-      <table class="price">
-        <tbody>
-          <tr><th>Базовая комплектация</th><td id="p-base">—</td></tr>
-          <tr><th>Направляющая сверх нормы</th><td id="p-extra">—</td></tr>
-          <tr><th>Поворот</th><td id="p-turn">—</td></tr>
-          <tr><th>Платформа для коляски</th><td id="p-wheel">—</td></tr>
-          <tr><th>Монтаж</th><td id="p-install">—</td></tr>
-          <tr class="total"><th>Итого</th><td id="p-total">—</td></tr>
-        </tbody>
-      </table>
-      <p class="fineprint">Расчёт ориентировочный: не заменяет выезд на объект и не учитывает
-        доставку, демонтаж и подготовку основания.</p>
+      <p class="fineprint">Расчёт ориентировочный: не заменяет выезд на объект и проверку
+        несущей способности ступеней.</p>
     </section>
   </div>
 
   <details class="card formulas">
     <summary>Как считает программа</summary>
     <ul>
-      <li>Угол наклона: α = arctg(H / L), где H — высота, L — горизонтальная проекция.</li>
-      <li>Длина по наклону: √(H² + L²); направляющая — плюс 0,35 м с каждой стороны, плюс 1,6 м на поворот.</li>
-      <li>Точки крепления: шаг 1,5 м, но не меньше двух.</li>
-      <li>Тяговое усилие: F = m·g·(sin α + 0,02·cos α) + m·a при КПД привода 0,75.</li>
-      <li>Нагрузка на крепление: m·g·cos α, делённое на число точек.</li>
-      <li>Цена: база 320 000 ₽ за 3 м, далее 42 000 ₽/м, поворот 90 000 ₽,
-          платформа для коляски 50 000 ₽, монтаж 12 %.</li>
+      <li>Высота подъёма — сумма высот всех ступеней.</li>
+      <li>Горизонтальная длина ступеней — сумма проступей всех ступеней, кроме последней.</li>
+      <li>Угол подъёма: α = arctg(H / L), H — высота подъёма, L — длина по ступеням.</li>
+      <li>Длина по наклону: √(H² + L²); направляющая — плюс 250 мм с каждой стороны.</li>
+      <li>Точки крепления — шаг 1,5 м, минимум две.</li>
+      <li>Длина платформы: 1100 мм плюс удлинение пандуса (50/100/150 мм)
+          или минус 150 мм для укороченной площадки НПУ.</li>
+      <li>Ширина платформы — ширина марша минус 100 мм, но не меньше 800 мм.</li>
+      <li>Тяговое усилие: m·g·(sin α + 0,02·cos α) при КПД привода 0,75.</li>
+      <li>Ограничения платформы: подъём до 10 м, угол до 30°.</li>
     </ul>
   </details>
 
   <footer class="footer">
-    <p>Константы (нормы угла, шаг ступени, цены) задаются в <code>liftcalc/calc.py</code> и <code>web/app.js</code>.</p>
+    <p>Константы (ограничения, длины платформы, скорости) задаются в
+      <code>platformcalc/calc.py</code> и <code>web/app.js</code>.</p>
   </footer>
 </main>
 
